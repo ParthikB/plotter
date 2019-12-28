@@ -1,5 +1,5 @@
 # Importing the Plotting Class
-from plots import *
+from _plots_ import *
 
 # Function to take the column name from the user
 def input_col_name(idx):
@@ -11,7 +11,9 @@ def input_col_name(idx):
 
 
 # Reading the data file
-data = pd.read_csv('datasets/BTC_USD.csv')
+# data = pd.read_csv('datasets/BTC_USD.csv')
+data = pd.read_csv('datasets/iris.csv')
+
 columns = [col for col in data.columns]
 
 
@@ -21,7 +23,7 @@ if __name__ == '__main__':
     print(
         f'''
         Available Columns : {columns}
-        Available Plots   : line, scatter, bar
+        Available Plots   : {available_plots}
         '''
     )
 
@@ -32,7 +34,7 @@ if __name__ == '__main__':
 
     # PLOTTING
     # try:
-    plot = Plot()
+    plot = Plot(data)
     plot.plot(type, col1, col2)
 
     # except:
