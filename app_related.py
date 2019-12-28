@@ -44,18 +44,24 @@ def update_graph(input_data):
     print(input_data.split(','))
     data = pd.read_csv('datasets/BTC_USD.csv')
 
-    return dcc.Graph(
-        id='graph1',
-        figure = {
-            'data' : [
-                {'x':data[x], 'y':data[y], 'type':type, 'name':f'{x} v/s {y}'}
-                    ],
-            'layout' : {
-                'title' : f'{x} v/s {y}'
-                        }
-                }
-            )
+    return html.Div(children=[ 
+        
+        html.Div(children=f'''
+            Available Columns : {data.columns}
+        '''),
 
+        dcc.Graph(
+            id='graph1',
+            figure = {
+                'data' : [
+                    {'x':data[x], 'y':data[y], 'type':type, 'name':f'{x} v/s {y}'}
+                        ],
+                'layout' : {
+                    'title' : f'{x} v/s {y}'
+                            }
+                    }
+                )
+    ])
 
 if __name__ == '__main__':
     app.run_server(debug=True)
