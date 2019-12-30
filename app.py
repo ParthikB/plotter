@@ -29,51 +29,21 @@ def parse_contents(contents, filename):
         return html.Div([
             'There was an error processing this file.'
         ])
-    return html.Div([html.H5(filename)])
+    return html.Div([
+        html.H5(filename)])
 
 
 
 app = dash.Dash('vehicle-data')
+app.config['suppress_callback_exceptions'] = True
 
 # data = pd.read_csv('datasets/iris.csv')
-# data = pd.read_csv('datasets/BTC_USD.csv')
+data = pd.read_csv('datasets/BTC_USD.csv')
 
-
-app.layout = html.Div([
-    dcc.Upload(
-        id='upload-data',
-        children=html.Div([
-            'Drag and Drop or ',
-            html.A('Select Files')
-        ]),
-        style={
-            'width': '100%',
-            'height': '60px',
-            'lineHeight': '60px',
-            'borderWidth': '1px',
-            'borderStyle': 'dashed',
-            'borderRadius': '5px',
-            'textAlign': 'center',
-            'margin': '10px'
-        },
-        # Allow multiple files to be uploaded
-        multiple=True
-    )])   
-
-@app.callback([Input('upload-data', 'contents')])
-def update_output(list_of_contents, list_of_names):
-    if list_of_contents is not None:
-        global children
-        children = [
-            parse_contents(c, n) for c, n in
-            zip(list_of_contents, list_of_names)]
-        # print(df)
-        return
-
-data = df
 data_dict = {}
 for col in data.columns:
     data_dict[col] = data[col]
+
 
 app.layout = html.Div([
     html.Div([
@@ -99,8 +69,9 @@ app.layout = html.Div([
             'margin': '10px'
         },
         # Allow multiple files to be uploaded
-        multiple=True
+        multiple=False
     ),    
+    html.Div(id='output-data-upload'),
 
     dcc.Dropdown(id='x_axis',
                  options=[{'label': s, 'value': s} for s in data_dict.keys()],
@@ -114,7 +85,6 @@ app.layout = html.Div([
                  multi=False,
                  placeholder='Select column for Y-axis'
                  ),
-    html.Div(id='output-data-upload'),
     html.Div(children=html.Div(id='graphs'), className='row'),
     ], 
     
@@ -125,8 +95,19 @@ app.layout = html.Div([
     )
 
 
+@app.callback(Output('output-data-upload', 'children'),
+              [Input('upload-data', 'contents')],
+              [State('upload-data', 'filename')])
+def update_output(list_of_contents, list_of_names):
+    if list_of_contents is not None:
+        global children
+        children = [
+            parse_contents(c, n) for c, n in
+            zip(list_of_contents, list_of_names)]
+        print(df.head())
+        return children
 
-        
+print(111111111111111111111111111111111111)
 
 
 @app.callback(
