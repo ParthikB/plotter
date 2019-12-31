@@ -7,6 +7,7 @@ import plotly.graph_objs as go
 
 
 app = dash.Dash('Quick Plotter')
+server = app.server
 
 data = pd.read_csv('datasets/iris.csv')
 
