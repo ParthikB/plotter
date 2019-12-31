@@ -1,9 +1,7 @@
 # plotter
 
-Link to the Latest Version:
-
-https://quick-plotter.herokuapp.com/
-
+<a href='https://quick-plotter.herokuapp.com/'>Link<a> to the Latest Version:
+<hr>
 
 Files Description:
 
