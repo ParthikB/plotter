@@ -40,7 +40,8 @@ app.layout = html.Div([
     dcc.Dropdown(id='plot_type',
                  options=[{'label': 'Line',          'value': 'lines'},
                          {'label': 'Scatter',       'value': 'markers'},
-                         {'label': "Bring 'em all", 'value': 'lines+markers'}],    #              placeholder='Select Plot type',
+                         {'label': "Bring 'em all", 'value': 'lines+markers'}],
+                 placeholder='Select Plot type',
                  multi=False)
                  ],
     style={'width':'40%'}),
