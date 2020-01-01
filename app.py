@@ -7,9 +7,9 @@ import plotly.graph_objs as go
 
 
 app = dash.Dash('Quick Plotter')
-server = app.server
 
-data = pd.read_csv('datasets/iris.csv')
+data = pd.read_csv('datasets/BTC_USD.csv')
+# data = pd.read_csv('datasets/iris.csv')
 
 data_dict = {}
 for col in data.columns:
@@ -36,12 +36,12 @@ app.layout = html.Div([
     #             options=[{'label': 'Line',          'value': 'lines'},
     #                     {'label': 'Scatter',       'value': 'markers'},
     #                     {'label': "Bring 'em all", 'value': 'lines+markers'}],
-    #             value='lines')
+    #             value='lines',
+    #             labelStyle={'display': 'inline-block'})
     dcc.Dropdown(id='plot_type',
                  options=[{'label': 'Line',          'value': 'lines'},
                          {'label': 'Scatter',       'value': 'markers'},
-                         {'label': "Bring 'em all", 'value': 'lines+markers'}],
-                 placeholder='Select Plot type',
+                         {'label': "Bring 'em all", 'value': 'lines+markers'}],    #              placeholder='Select Plot type',
                  multi=False)
                  ],
     style={'width':'40%'}),
@@ -74,11 +74,19 @@ def update_graph(x_axis, y_axis, plot_type):
 
         graphs.append(html.Div(dcc.Graph(
             id='data_names',
-            animate=False,
-            figure={'data': [data],'layout' : go.Layout(xaxis=dict(range=[min(data_dict[x]),max(data_dict[x])]),
-                                                        yaxis=dict(range=[min(data_dict[y]),max(data_dict[y])]),
-                                                        # margin={'l':50,'r':1,'t':45,'b':1},
-                                                        title=f'{x} v/s {y}')}),
+            figure={
+                'data': [data],
+                'layout' : dict(
+                    title=f'{x} v/s {y}',
+                    xaxis={
+                        'title': x,
+                        'range' : [min(data_dict[x]),max(data_dict[x])]
+                            },
+                    yaxis={
+                        'title': y,
+                        'range' : [min(data_dict[y]),max(data_dict[y])]
+                            }
+                )}),
             className=class_choice))
 
         return graphs
