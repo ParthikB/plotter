@@ -22,36 +22,62 @@ ax1 = f.add_subplot(111)
 
 class Command:
 
-	def update_graph(self, plot_type):
+	def update_graph(self, plot_type, plot_val_x, plot_val_y):
 		ax1.clear()
 		if plot_type == 'line':
 			print('plotting line')
-			ax1.plot(dataframe.col1, dataframe.col2)
+			ax1.plot(dataframe[plot_val_x], dataframe[plot_val_y])
 		elif plot_type == 'scatter':
 			print('plotting scatter')
-			ax1.scatter(dataframe.col1, dataframe.col2)
+			ax1.scatter(dataframe[plot_val_x], dataframe[plot_val_y])
 		ax1.grid(1)
-
+		ax1.set_xlabel(plot_val_x)
+		ax1.set_ylabel(plot_val_y)
+		
 		canvas.draw()
 
 
 	def browse_file(self, root):
 		root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("csv files","*.csv"),("all files","*.*")))
-		global dataframe
+		global dataframe, feature_list, plot_val_x, plot_val_y
+		
 		dataframe = pd.read_csv(root.filename)
+		
+		feature_list = []
+		for col in dataframe.columns:
+			feature_list.append(col)
+		
+		plot_val_x  = tk.StringVar()
+		plot_val_x.set(feature_list[0])
+		popupMenu_x = tk.OptionMenu(root, plot_val_x, *feature_list)
+		popupMenu_x.pack()
+		# plot_val_x  = plot_val_x.get()
+		
+		plot_val_y  = tk.StringVar()
+		plot_val_y.set(feature_list[0])
+		popupMenu_y = tk.OptionMenu(root, plot_val_y, *feature_list)
+		popupMenu_y.pack()
+		# plot_val_y  = plot_val_y.get()
+
+		print(plot_val_x, plot_val_y)
+		# print(plot_val_x.get(), plot_val_y.get())
 		print('dataframe loaded.')
+		# print(plot_val_x.get(), plot_val_y.get())
 
 
-	def plot(self, root, filename, plot_type):
-
+	def plot(self, root, filename, plot_type, plot_val_x, plot_val_y):
+		print('*****************************************')
+		print("********************", plot_val_x, plot_val_y)
 		ax1.clear()
 		if plot_type == 'line':
 			print('plotting line')
-			ax1.plot(dataframe.col1, dataframe.col2)
+			ax1.plot(dataframe[plot_val_x], dataframe[plot_val_y])
 		elif plot_type == 'scatter':
 			print('plotting scatter')
-			ax1.scatter(dataframe.col1, dataframe.col2)
+			ax1.scatter(dataframe[plot_val_x], dataframe[plot_val_y])
 		ax1.grid(1)
+		ax1.set_xlabel(plot_val_x)
+		ax1.set_ylabel(plot_val_y)
 
 		global canvas
 		canvas = FigureCanvasTkAgg(f, root)
@@ -102,6 +128,7 @@ class StartPage(tk.Frame):
 	def __init__(self, parent, controller):
 		tk.Frame.__init__(self, parent)
 		
+
 		label = tk.Label(self, 
 						text='Now this is where it starts!', 
 						font=LARGE_FONT)
@@ -111,29 +138,35 @@ class StartPage(tk.Frame):
 							command=lambda: command.browse_file(self))
 		button1.pack()
 
+		# feature_list = ['none']		
+		# plot_vals = tk.StringVar()
+		# popupMenu = tk.OptionMenu(self, plot_vals, *feature_list)
+		# popupMenu.pack()
 
 		global plot_type
 		plot_type = tk.StringVar()
-		radio1 = tk.Radiobutton(self, 
+		radio1 = ttk.Radiobutton(self, 
 								text='Line', 
 								variable=plot_type, 
 								value='line',
-								command=lambda: command.update_graph('line'))
+								command=lambda: command.update_graph('line', plot_val_x.get(), plot_val_y.get()))
 		radio1.pack(anchor='w')
 
-		radio2 = tk.Radiobutton(self, 
+		radio2 = ttk.Radiobutton(self, 
 								text='Scatter', 
 								variable=plot_type, 
 								value='scatter',
-								command=lambda: command.update_graph('scatter'))
+								command=lambda: command.update_graph('scatter', plot_val_x.get(), plot_val_y.get()))
 		radio2.pack(anchor='w')
 
 
 		button2 = ttk.Button(self, text='Plot',
-							command=lambda: command.plot(self, dataframe, plot_type.get()))
+							command=lambda: command.plot(self, dataframe, plot_type.get(), plot_val_x.get(), plot_val_y.get()))
 		button2.pack()
 
 
+
 command = Command()
+
 app = App()
 app.mainloop()
