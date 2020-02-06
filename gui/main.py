@@ -20,6 +20,51 @@ LARGE_FONT = ('Verdana', 12)
 f = Figure(figsize=(5, 5), dpi=100)
 ax1 = f.add_subplot(111)
 
+class Command:
+
+	def update_graph(self, plot_type):
+		ax1.clear()
+		if plot_type == 'line':
+			print('plotting line')
+			ax1.plot(dataframe.col1, dataframe.col2)
+		elif plot_type == 'scatter':
+			print('plotting scatter')
+			ax1.scatter(dataframe.col1, dataframe.col2)
+		ax1.grid(1)
+
+		canvas.draw()
+
+
+	def browse_file(self, root):
+		root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("csv files","*.csv"),("all files","*.*")))
+		global dataframe
+		dataframe = pd.read_csv(root.filename)
+		print('dataframe loaded.')
+
+
+	def plot(self, root, filename, plot_type):
+
+		ax1.clear()
+		if plot_type == 'line':
+			print('plotting line')
+			ax1.plot(dataframe.col1, dataframe.col2)
+		elif plot_type == 'scatter':
+			print('plotting scatter')
+			ax1.scatter(dataframe.col1, dataframe.col2)
+		ax1.grid(1)
+
+		global canvas
+		canvas = FigureCanvasTkAgg(f, root)
+		canvas.get_tk_widget().pack(side=tk.RIGHT, fill='both', expand=True)
+		print('Canvas created.')
+		canvas.draw()
+
+		toolbar = NavigationToolbar2Tk(canvas, root)
+		toolbar.update()
+		canvas._tkcanvas.pack(side=tk.TOP, fill='both', expand=True)
+		
+
+
 
 class App(tk.Tk):
 
@@ -49,47 +94,7 @@ class App(tk.Tk):
 		frame.tkraise()
 
 
-def update_graph(plot_type):
-	ax1.clear()
-	if plot_type == 'line':
-		print('plotting line')
-		ax1.plot(dataframe.col1, dataframe.col2)
-	elif plot_type == 'scatter':
-		print('plotting scatter')
-		ax1.scatter(dataframe.col1, dataframe.col2)
-	ax1.grid(1)
 
-	canvas.draw()
-
-
-def browse_file(self):
-	self.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("csv files","*.csv"),("all files","*.*")))
-	global dataframe
-	dataframe = pd.read_csv(self.filename)
-	print('dataframe loaded.')
-
-
-def plot(self, filename, plot_type):
-
-	ax1.clear()
-	if plot_type == 'line':
-		print('plotting line')
-		ax1.plot(dataframe.col1, dataframe.col2)
-	elif plot_type == 'scatter':
-		print('plotting scatter')
-		ax1.scatter(dataframe.col1, dataframe.col2)
-	ax1.grid(1)
-
-	global canvas
-	canvas = FigureCanvasTkAgg(f, self)
-	canvas.get_tk_widget().pack(side=tk.RIGHT, fill='both', expand=True)
-	print('Canvas created.')
-	canvas.draw()
-
-	toolbar = NavigationToolbar2Tk(canvas, self)
-	toolbar.update()
-	canvas._tkcanvas.pack(side=tk.TOP, fill='both', expand=True)
-	
 
 
 class StartPage(tk.Frame):
@@ -103,7 +108,7 @@ class StartPage(tk.Frame):
 		label.pack(pady=10, padx=10)
 
 		button1 = ttk.Button(self, text='Upload',
-							command=lambda: browse_file(self))
+							command=lambda: command.browse_file(self))
 		button1.pack()
 
 
@@ -113,28 +118,22 @@ class StartPage(tk.Frame):
 								text='Line', 
 								variable=plot_type, 
 								value='line',
-								command=lambda: update_graph('line'))
+								command=lambda: command.update_graph('line'))
 		radio1.pack(anchor='w')
 
 		radio2 = tk.Radiobutton(self, 
 								text='Scatter', 
 								variable=plot_type, 
 								value='scatter',
-								command=lambda: update_graph('scatter'))
+								command=lambda: command.update_graph('scatter'))
 		radio2.pack(anchor='w')
 
 
 		button2 = ttk.Button(self, text='Plot',
-							command=lambda: plot(self, dataframe, plot_type.get()))
+							command=lambda: command.plot(self, dataframe, plot_type.get()))
 		button2.pack()
 
-		button3 = ttk.Button(self, text='canvas check',
-							command=lambda: print_canvas())
-		button3.pack()
 
-
-
-
-
+command = Command()
 app = App()
 app.mainloop()
