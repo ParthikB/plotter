@@ -6,7 +6,11 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 
 import tkinter as tk
+from tkinter import filedialog
 from tkinter import ttk
+
+import pandas as pd
+
 
 
 LARGE_FONT = ('Verdana', 12)
@@ -27,7 +31,7 @@ class App(tk.Tk):
 
 		self.frames={}
 
-		for F in (StartPage, PageOne):
+		for F in [StartPage]:
 			frame = F(container, self)
 			self.frames[F] = frame
 			frame.grid(row=0, column=0, sticky='ew')
@@ -39,21 +43,29 @@ class App(tk.Tk):
 		frame = self.frames[cont]
 		frame.tkraise()
 
-# def upload(name):
-# 	print(f'{name} > File uploaded!')
-def plot(self):
-		f = Figure(figsize=(5, 5), dpi=100)
-		ax1 = f.add_subplot(111)
-		ax1.plot(range(10))
-		ax1.grid(1)
 
-		canvas = FigureCanvasTkAgg(f, self)
-		canvas.draw()
-		canvas.get_tk_widget().pack(side=tk.TOP, fill='both', expand=True)
 
-		toolbar = NavigationToolbar2Tk(canvas, self)
-		toolbar.update()
-		canvas._tkcanvas.pack(side=tk.TOP, fill='both', expand=True)
+def browse_file(self):
+	self.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("csv files","*.csv"),("all files","*.*")))
+	global dataframe
+	dataframe = pd.read_csv(self.cfilename)
+	print('dataframe loaded.')
+
+
+def plot(self, filename):
+	f = Figure(figsize=(5, 5), dpi=100)
+	ax1 = f.add_subplot(111)
+	ax1.plot(dataframe.col1, dataframe.col2)
+	ax1.grid(1)
+
+	canvas = FigureCanvasTkAgg(f, self)
+	canvas.draw()
+	canvas.get_tk_widget().pack(side=tk.RIGHT, fill='both', expand=True)
+
+	toolbar = NavigationToolbar2Tk(canvas, self)
+	toolbar.update()
+	canvas._tkcanvas.pack(side=tk.TOP, fill='both', expand=True)
+
 
 
 class StartPage(tk.Frame):
@@ -65,27 +77,14 @@ class StartPage(tk.Frame):
 		label.pack(pady=10, padx=10)
 
 		button1 = ttk.Button(self, text='Upload',
-			command=lambda: controller.show_frame(PageOne))
+			command=lambda: browse_file(self))
 		button1.pack()
-		
+
 		button2 = ttk.Button(self, text='Plot',
-			command=lambda: plot(self))
+			command=lambda: plot(self, dataframe))
 		button2.pack()
 
 		
-
-class PageOne(tk.Frame):
-
-	def __init__(self, parent, controller):
-		tk.Frame.__init__(self, parent)
-
-		label = tk.Label(self, text='Page two', font=LARGE_FONT)
-		label.pack(pady=10, padx=10)
-
-		button1 = ttk.Button(self, text='Home',
-			command=lambda: controller.show_frame(StartPage))
-		button1.pack()
-
 
 app = App()
 app.mainloop()
