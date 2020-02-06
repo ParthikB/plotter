@@ -40,7 +40,8 @@ class App(tk.Tk):
 		for F in [StartPage]:
 			frame = F(container, self)
 			self.frames[F] = frame
-			frame.grid(row=0, column=0, sticky='ew')
+			# frame.grid(row=0, column=0, sticky='ew')
+			frame.pack()
 
 		self.show_frame(StartPage)
 
@@ -48,6 +49,8 @@ class App(tk.Tk):
 	def show_frame(self, cont):
 		frame = self.frames[cont]
 		frame.tkraise()
+
+
 
 
 # Helper Class that carries various commands.
@@ -74,7 +77,7 @@ class Command:
 
 
 	# Browses the file on the local machine
-	def browse_file(self, root):
+	def browse_file(self, root, parent):
 
 		root.filename =  filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("csv files","*.csv"), ("all files", "*.*")))
 		
@@ -87,22 +90,53 @@ class Command:
 		feature_list = []
 		for col in dataframe.columns:
 			feature_list.append(col)
+
+#####################################################################################################################################
 		
+		INFO = tk.Frame(parent)
+
+		FEATURES = tk.Frame(INFO)
+
+		tk.Label(FEATURES, text='Features :').grid(row=0)
+
 		# Selecting the X-AXIS feature
 		plot_val_x  = tk.StringVar()
 		plot_val_x.set(feature_list[0]) # Setting the default value for the variable
-		popupMenu_x = tk.OptionMenu(root, plot_val_x, *feature_list)
-		popupMenu_x.pack()
+		popupMenu_x = tk.OptionMenu(FEATURES, plot_val_x, *feature_list, command=lambda: ).grid(row=1)
 		
 		# Selecting the Y-AXIS feature
 		plot_val_y  = tk.StringVar()
 		plot_val_y.set(feature_list[0])
-		popupMenu_y = tk.OptionMenu(root, plot_val_y, *feature_list)
-		popupMenu_y.pack()
-
-		# print(plot_val_x, plot_val_y)
-		print('Dataframe loaded.')
+		popupMenu_y = tk.OptionMenu(FEATURES, plot_val_y, *feature_list).grid(row=2)
 		
+		FEATURES.pack(pady=30)
+
+
+
+		OPTIONS = tk.Frame(INFO)
+		
+		tk.Label(OPTIONS, text='Plot Type :').grid(row=0)
+
+		# Options to select the PLOT TYPE
+		ttk.Radiobutton(OPTIONS, 
+						text='Line', 
+						value='line',
+						command=lambda: command.update_graph('line', plot_val_x.get(), plot_val_y.get())).grid(row=1, sticky='w')
+
+		ttk.Radiobutton(OPTIONS, 
+						text='Scatter', 
+						value='scatter',
+						command=lambda: command.update_graph('scatter', plot_val_x.get(), plot_val_y.get())).grid(row=2, sticky='w')
+
+		OPTIONS.pack(pady=30)
+
+		INFO.pack(side='left', padx=15)
+#####################################################################################################################################
+
+
+#####################################################################################################################################
+		GRAPH = tk.Frame(parent)
+
 		# Creating a Blank Canvas for the matplotlib graphs
 		global canvas
 		canvas = FigureCanvasTkAgg(f, root)
@@ -115,6 +149,10 @@ class Command:
 		canvas._tkcanvas.pack(side=tk.TOP, fill='both', expand=True)
 
 
+		GRAPH.pack(side='right', fill='both', expand=True)
+#####################################################################################################################################
+
+
 
 # The HOMEPAGE of the GUI
 class StartPage(tk.Frame):
@@ -122,30 +160,18 @@ class StartPage(tk.Frame):
 	def __init__(self, parent, controller):
 		tk.Frame.__init__(self, parent)
 		
+		# INFO = tk.Frame(parent)
+		INFO = parent
 
-		label = tk.Label(self, 
-						text='Now this is where it begins!', 
-						font=LARGE_FONT)
-		label.pack(pady=10, padx=10)
+		label = tk.Label(INFO, 
+						text='It begins here!', 
+						font=LARGE_FONT).pack()
 
 		# the UPLOAD button
-		button1 = ttk.Button(self, text='Upload',
-							command=lambda: command.browse_file(self))
-		button1.pack()
+		button1 = ttk.Button(INFO, text='Upload',
+							command=lambda: command.browse_file(INFO, parent)).pack()
 
-
-		# Options to select the PLOT TYPE
-		radio1 = ttk.Radiobutton(self, 
-								text='Line', 
-								value='line',
-								command=lambda: command.update_graph('line', plot_val_x.get(), plot_val_y.get()))
-		radio1.pack(anchor='w')
-
-		radio2 = ttk.Radiobutton(self, 
-								text='Scatter', 
-								value='scatter',
-								command=lambda: command.update_graph('scatter', plot_val_x.get(), plot_val_y.get()))
-		radio2.pack(anchor='w')
+		# INFO.pack(side='left')
 
 
 
