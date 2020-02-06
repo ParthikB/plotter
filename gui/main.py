@@ -95,6 +95,8 @@ class Command:
 		
 		INFO = tk.Frame(parent)
 
+
+		
 		FEATURES = tk.Frame(INFO)
 
 		tk.Label(FEATURES, text='Features :').grid(row=0)
@@ -102,15 +104,14 @@ class Command:
 		# Selecting the X-AXIS feature
 		plot_val_x  = tk.StringVar()
 		plot_val_x.set(feature_list[0]) # Setting the default value for the variable
-		popupMenu_x = tk.OptionMenu(FEATURES, plot_val_x, *feature_list, command=lambda: ).grid(row=1)
+		popupMenu_x = tk.OptionMenu(FEATURES, plot_val_x, command=lambda x: command.update_graph('line', plot_val_x.get(), plot_val_y.get()), *feature_list).grid(row=1)
 		
 		# Selecting the Y-AXIS feature
 		plot_val_y  = tk.StringVar()
 		plot_val_y.set(feature_list[0])
-		popupMenu_y = tk.OptionMenu(FEATURES, plot_val_y, *feature_list).grid(row=2)
+		popupMenu_y = tk.OptionMenu(FEATURES, plot_val_y, command=lambda x: command.update_graph('line', plot_val_x.get(), plot_val_y.get()), *feature_list).grid(row=2)
 		
 		FEATURES.pack(pady=30)
-
 
 
 		OPTIONS = tk.Frame(INFO)
@@ -129,6 +130,8 @@ class Command:
 						command=lambda: command.update_graph('scatter', plot_val_x.get(), plot_val_y.get())).grid(row=2, sticky='w')
 
 		OPTIONS.pack(pady=30)
+
+
 
 		INFO.pack(side='left', padx=15)
 #####################################################################################################################################
